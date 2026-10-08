@@ -27,8 +27,6 @@ jobs:
 
       - name: Coverity Scan
         uses: blackduck-inc/black-duck-security-scan@v2.11.0
-        env:
-          BRIDGE_COVERITY_PRCOMMENT_IMPACTS: High,Medium
         with:
           coverity_url: ${{ vars.COVERITY_URL }}
           coverity_user: ${{ secrets.COVERITY_USER }}
@@ -37,10 +35,12 @@ jobs:
           coverity_project_name: ${{ github.event.repository.name }}
           coverity_stream_name: ${{ github.event.repository.name }}-${{ github.ref_name }}
 
+          coverity_local: true
+
           coverity_clean_command: ./mvnw -B clean
           coverity_build_command: ./mvnw -B package -DskipTests
 
           coverity_policy_view: Outstanding Issues
           coverity_waitForScan: true
-          coverity_mark_build_status: success
+
           include_diagnostics: true
