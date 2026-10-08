@@ -1,0 +1,43 @@
+name: Coverity Scan
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  coverity:
+    runs-on: [self-hosted, coverity]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Coverity Scan
+        uses: blackduck-inc/black-duck-security-scan@v2.11.0
+        env:
+          BRIDGE_COVERITY_PRCOMMENT_IMPACTS: High,Medium
+        with:
+          coverity_url: ${{ vars.COVERITY_URL }}
+          coverity_user: ${{ secrets.COVERITY_USER }}
+          coverity_passphrase: ${{ secrets.COVERITY_PASSPHRASE }}
+
+          coverity_project_name: ${{ github.event.repository.name }}
+          coverity_stream_name: ${{ github.event.repository.name }}-${{ github.ref_name }}
+
+          coverity_policy_view: Outstanding Issues
+          coverity_waitForScan: true
+          coverity_mark_build_status: success
+          include_diagnostics: false
