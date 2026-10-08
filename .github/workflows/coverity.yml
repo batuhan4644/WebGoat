@@ -40,7 +40,6 @@ jobs:
           coverity_clean_command: ./mvnw -B clean
           coverity_build_command: ./mvnw -B package -DskipTests
 
-          coverity_policy_view: Outstanding Issues
           coverity_waitForScan: true
 
-          include_diagnostics: true
+          include_diagnostics: false
