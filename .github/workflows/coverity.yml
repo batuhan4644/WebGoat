@@ -35,6 +35,11 @@ jobs:
           coverity_project_name: ${{ github.event.repository.name }}
           coverity_stream_name: ${{ github.event.repository.name }}-${{ github.ref_name }}
 
+          coverity_local: true
+
+          coverity_build_command: ./mvnw -B -DskipTests package
+          coverity_clean_command: ./mvnw -B clean
+
           coverity_policy_view: Outstanding Issues
           coverity_waitForScan: true
           include_diagnostics: false
