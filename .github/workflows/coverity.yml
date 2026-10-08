@@ -1,33 +1,40 @@
-name: CodeQL Scan
+name: Coverity Scan
 
 on:
   workflow_dispatch:
 
 permissions:
   contents: read
-  security-events: write
+  pull-requests: write
+  issues: write
 
 jobs:
-  codeql:
+  coverity:
     runs-on: self-hosted
 
     steps:
       - name: Checkout
         uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
 
       - name: Setup Java
         uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '21'
+          cache: maven
 
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
+      - name: Coverity Scan
+        uses: blackduck-inc/black-duck-security-scan@v2.11.0
         with:
-          languages: java-kotlin
+          coverity_url: ${{ vars.COVERITY_URL }}
+          coverity_user: ${{ secrets.COVERITY_USER }}
+          coverity_passphrase: ${{ secrets.COVERITY_PASSPHRASE }}
 
-      - name: Build WebGoat
-        run: ./mvnw clean package -DskipTests
+          coverity_project_name: ${{ github.event.repository.name }}
+          coverity_stream_name: ${{ github.event.repository.name }}-${{ github.ref_name }}
 
-      - name: Analyze
-        uses: github/codeql-action/analyze@v3
+          coverity_policy_view: Outstanding Issues
+          coverity_waitForScan: true
+          include_diagnostics: false
